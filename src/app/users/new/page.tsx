@@ -1,25 +1,8 @@
 import Form from "next/form";
 import prisma from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { createUser } from "../actions";
 
 export default function NewUser() {
-    async function createUser(formData: FormData) {
-        "use server";
-
-        const name = formData.get("name") as string;
-        const email = formData.get("email") as string;
-
-        await prisma.user.create({
-            data: {
-                name,
-                email,
-            },
-        });
-
-        revalidatePath("/users");
-        redirect("/users");
-    }
 
     return (
         <div className="max-w-2xl mx-auto p-4">

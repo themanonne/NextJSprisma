@@ -1,26 +1,8 @@
 import Form from "next/form";
 import prisma from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { createPost } from "../actions";
 
 export default function NewPost() {
-    async function createPost(formData: FormData) {
-        "use server";
-
-        const title = formData.get("title") as string;
-        const content = formData.get("content") as string;
-
-        await prisma.post.create({
-            data: {
-                title,
-                content,
-                authorId: 1,
-            },
-        });
-
-        revalidatePath("/posts");
-        redirect("/posts");
-    }
 
     return (
         <div className="max-w-2xl mx-auto p-4">
