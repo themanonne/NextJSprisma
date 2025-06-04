@@ -1,4 +1,6 @@
 import prisma from "../../lib/prisma"
+import { QueryClient, HydrationBoundary, dehydrate } from "@tanstack/react-query";
+import Users from "./Users";
 
 export default async function Page() {
     const users = await prisma.user.findMany({
@@ -7,19 +9,15 @@ export default async function Page() {
         },
     });
 
+    const queryClient = new QueryClient()
+    await queryClient.prefetchQuery({
+        queryKey: ['users'],
+        queryFn: () => Promise.resolve(users),
+    })
+
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center -mt-16">
-            <h1 className="text-4xl font-bold mb-8 font-[family-name:var(--font-geist-sans)] text-[#333333]">
-                Liste de tous les Utilisateurs
-            </h1>
-            <ul className="font-[family-name:var(--font-geist-sans)] max-w-2xl space-y-4">
-                {users.map((user) => (
-                    <li key={user.id}>
-                        <span className="font-semibold">{user.name}<br /></span>
-                        <span className="text-m">{user.email}</span>
-                    </li>
-                ))}
-            </ul>
-        </div>
-    );
+        <HydrationBoundary state={dehydrate(queryClient)}>
+            <Users />
+        </HydrationBoundary>
+    )
 }
